@@ -59,10 +59,6 @@ library(QihuiSunFinal)
 #>     guess_encoding
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like
-so:
-
 ``` r
 # Function 1, Show statistics of pokemons, including weight, height and strength.
 pokemon_data() 
