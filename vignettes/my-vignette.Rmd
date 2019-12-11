@@ -1,0 +1,116 @@
+---
+title: "QihuiSun-vignette"
+author: "Qihui Sun"
+date: "12/11/2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+This package allows people to extract statistic data of pokemons, including each of their weight, height, HP, Speed, Attack, and etc. Futuremore, people can also choose parameters to see specific characteristics of pokemons, and to see summaries of these statistics. This whole package includes three functions "pokemon_data()", "pokemon_data_partial()", and "aummary_pokemon_data_partial()".
+
+I acquired the basic pokemon data from "https://pokeapi.co/", obtaining all pokemons' name, weight, and height. Then I used web scraper to extract more detailed information on each pokemon's strength index, and combine these data. This package is especially designed for all pokemon lovers!
+
+### Funciton 1
+Use API and WebScraper to extract data on pokemons and statistics of pokemons, including weight, height and strength.
+```{r}
+library("httr")
+library("dplyr")
+library("tidyverse")
+library("jsonlite")
+library("xml2")
+library("rvest")
+```
+
+```{r}
+pokemon_data <- function() {
+
+  requireNamespace("httr")
+  requireNamespace("dplyr")
+  requireNamespace("tidyverse")
+  requireNamespace("jsonlite")
+  requireNamespace("xml2")
+  requireNamespace("rvest")
+
+  endpoint <- "https://pokeapi.co/api/v2/pokemon/?offset807&limit=807"
+  data <- GET(endpoint)
+  newdata <- fromJSON(content(data, as = "text"))
+  pokemon <- newdata[[4]] %>% as.data.frame()
+  detail=function(url){
+    base=GET(url)
+    infotb=fromJSON(content(base, as = "text"))
+    weight=infotb['weight']
+    height=infotb['height']
+    fund=data.frame('weight'=weight,'height'=height)
+    return (fund)
+  }
+  new_pk <- pokemon %>% mutate(df=map(url,detail))
+  pokemon_final <- new_pk %>% unnest(df)
+  pokemon_final %>% select(-url)
+  getinfo <- function(name){
+    website=paste0('https://pokemondb.net/pokedex/',name)
+    g=GET(website)
+    if(g$status_code!=200){return (NA)}
+    poke <- read_html(website)
+
+    stat <-html_nodes(poke,".vitals-table")
+    table <- html_table(stat)[[4]]
+    finaltable <- table%>%select(X1,X2)%>%pivot_wider(names_from = X1,values_from = X2)
+    return (finaltable)
+  }
+  final <- pokemon_final %>% mutate(ability=map(name,getinfo))
+  final_pokemon_data <- final %>% select(-url) %>% filter(!is.na(ability)) %>% unnest(ability) %>% rename(Pokemon_Name = name, Weight = weight, Height = height, Total_Ability = Total) %>% arrange(desc(Total_Ability))
+  final_pokemon_data
+}
+```
+
+```{r}
+pokemon_data()
+```
+
+### Function 2
+Users of the package can choose their interested area of pokemons and show chosen statistics of pokemons.
+```{r}
+library(dplyr)
+```
+
+```{r}
+pokemon_data_partial <- function(para = "Weight") {
+
+  requireNamespace("dplyr")
+
+  df <- pokemon_data()
+  paracol <- select(df, para)
+  return(cbind(df$Pokemon_Name, paracol))
+}
+```
+
+```{r}
+pokemon_data_partial()
+```
+
+### Function 3
+Users of the package can choose their interested area of pokemons and show summay statistics of pokemons.
+```{r}
+library(dplyr)
+```
+
+```{r}
+summary_pokemon_data_partial <- function(para = "Weight", summary = TRUE) {
+
+  requireNamespace("dplyr")
+
+  df <- pokemon_data()
+  partial <- select(df, para)
+  if (summary == TRUE) {
+    return(summary(partial))
+  }
+}
+```
+
+```{r}
+summary_pokemon_data_partial()
+```

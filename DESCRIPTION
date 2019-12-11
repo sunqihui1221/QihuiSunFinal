@@ -1,0 +1,27 @@
+Package: QihuiSunFinal
+Type: Package
+Title: Interesting data about pokemons
+Version: 0.1.0
+Authors@R: person("Qihui", "Sun", email = "qs2211@columbia.edu",
+      role = c("aut", "cre"))
+Maintainer: Qihui Sun <qs2211@columbia.edu>
+Description: This package contains three functions to see data of 
+            characteristics of pokemons, including pokemons' weight, 
+            height, and details on strengths. Users of this package 
+            can select specific characteristics to check data and see
+            summary statistics of each characteristic.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    httr,
+    dplyr,
+    tidyverse,
+    jsonlite,
+    xml2,
+    rvest
+RoxygenNote: 7.0.2.9000
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

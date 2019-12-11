@@ -1,0 +1,52 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# QihuiSunFinal
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of QihuiSunFinal is to check statistics of pokemons, including weigt, height and strength.
+
+## Installation
+
+``` r
+devtools::install_github("sunqihui1221/MyPackage")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r}
+library(QihuiSunFinal)
+```
+
+What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+
+```{r}
+# Function 1, Show statistics of pokemons, including weight, height and strength.
+pokemon_data() 
+```
+
+```{r}
+# Function 2, Show chosen statistics of pokemons, "Weight" statistics for pokemons
+pokemon_data_partial("Weight")
+```
+
+```{r}
+# Function3, Show summary statistics of pokemons, for example, "Weight"
+summary_pokemon_data_partial("Weight", TRUE)
+```
